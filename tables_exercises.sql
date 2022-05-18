@@ -1,0 +1,33 @@
+-- Use the employees database. Write the SQL code necessary to do this.
+use employees;
+
+-- List all the tables in the database. Write the SQL code necessary to accomplish this.
+show databases;
+
+-- Explore the employees table. What different data types are present on this table?
+-- int, date, varchar, enum (number, string, date)
+describe employees.employees;
+
+-- explore to answer later questions
+show tables;
+describe departments;
+describe dept_emp;
+describe dept_manager;
+describe employees;
+describe salaries;
+describe titles;
+
+-- Which table(s) do you think contain a numeric type column?
+-- employees, dept_emp, dept_manager, salaries, titles
+
+-- Which table(s) do you think contain a string type column?
+-- departments, dept_emp, dept_manager, employees, titles
+
+-- Which table(s) do you think contain a date type column?
+-- titles, salaries, employees, dept_manager, dept_emp,
+
+-- What is the relationship between the employees and the departments tables?
+-- dept_emp joins on employees.emp_no and departments.dept_no to describe when an employee was a member of that department
+
+-- Show the SQL that created the dept_manager table.
+SHOW CREATE TABLE dept_manager;
