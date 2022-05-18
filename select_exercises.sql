@@ -83,6 +83,7 @@ SELECT name, artist, sales FROM albums_db.albums WHERE sales > 20;
 -- 4.f. All the albums with a genre of "Rock". Why do these query results not include albums with a genre of "Hard rock" or "Progressive rock"?
 -- This query looks for albums with the string "Rock" stored in the genre field.  "Hard rock" != "Rock". 
 -- If we wanted to include those we would use the LIKE operator.
+-- SELECT name, artist, genre FROM albums_db.albums WHERE genre LIKE '%Rock%';
 SELECT name, artist, genre FROM albums_db.albums WHERE genre = 'Rock';
 -- +---------------------------------------+-------------------+-------+
 -- | name                                  | artist            | genre |
