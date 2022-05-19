@@ -61,5 +61,5 @@ hire_date between '1990-01-01' AND '1999-12-31'
 AND birth_date like '%-12-25'
 ORDER BY birth_date ASC, hire_date DESC;
 -- 362 rows returned
--- Chaoshen Uehara
+-- Khun Bernini
 -- Douadi Pettis
