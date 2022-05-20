@@ -10,12 +10,12 @@ describe employees.employees;
 
 -- explore to answer later questions
 show tables;
-describe departments;
-describe dept_emp;
-describe dept_manager;
-describe employees;
-describe salaries;
-describe titles;
+describe employees.departments;
+describe employees.dept_emp;
+describe employees.dept_manager;
+describe employees.employees;
+describe employees.salaries;
+describe employees.titles;
 
 -- Which table(s) do you think contain a numeric type column?
 -- employees, dept_emp, dept_manager, salaries, titles
@@ -41,3 +41,72 @@ SHOW CREATE TABLE employees.dept_manager;
 --   CONSTRAINT `dept_manager_ibfk_1` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`) ON DELETE CASCADE ON UPDATE RESTRICT,
 --   CONSTRAINT `dept_manager_ibfk_2` FOREIGN KEY (`dept_no`) REFERENCES `departments` (`dept_no`) ON DELETE CASCADE ON UPDATE RESTRICT
 -- ) ENGINE=InnoDB DEFAULT CHARSET=latin1'
+
+
+/*
+MySQL [employees]> describe departments;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| dept_no   | char(4)     | NO   | PRI | NULL    |       |
+| dept_name | varchar(40) | NO   | UNI | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+2 rows in set (0.016 sec)
+
+MySQL [employees]> describe dept_emp;
++-----------+---------+------+-----+---------+-------+
+| Field     | Type    | Null | Key | Default | Extra |
++-----------+---------+------+-----+---------+-------+
+| emp_no    | int     | NO   | PRI | NULL    |       |
+| dept_no   | char(4) | NO   | PRI | NULL    |       |
+| from_date | date    | NO   |     | NULL    |       |
+| to_date   | date    | NO   |     | NULL    |       |
++-----------+---------+------+-----+---------+-------+
+4 rows in set (0.020 sec)
+
+MySQL [employees]> describe dept_manager;
++-----------+---------+------+-----+---------+-------+
+| Field     | Type    | Null | Key | Default | Extra |
++-----------+---------+------+-----+---------+-------+
+| emp_no    | int     | NO   | PRI | NULL    |       |
+| dept_no   | char(4) | NO   | PRI | NULL    |       |
+| from_date | date    | NO   |     | NULL    |       |
+| to_date   | date    | NO   |     | NULL    |       |
++-----------+---------+------+-----+---------+-------+
+4 rows in set (0.019 sec)
+
+MySQL [employees]> describe employees;
++------------+---------------+------+-----+---------+-------+
+| Field      | Type          | Null | Key | Default | Extra |
++------------+---------------+------+-----+---------+-------+
+| emp_no     | int           | NO   | PRI | NULL    |       |
+| birth_date | date          | NO   |     | NULL    |       |
+| first_name | varchar(14)   | NO   |     | NULL    |       |
+| last_name  | varchar(16)   | NO   |     | NULL    |       |
+| gender     | enum('M','F') | NO   |     | NULL    |       |
+| hire_date  | date          | NO   |     | NULL    |       |
++------------+---------------+------+-----+---------+-------+
+6 rows in set (0.021 sec)
+
+MySQL [employees]> describe salaries;
++-----------+------+------+-----+---------+-------+
+| Field     | Type | Null | Key | Default | Extra |
++-----------+------+------+-----+---------+-------+
+| emp_no    | int  | NO   | PRI | NULL    |       |
+| salary    | int  | NO   |     | NULL    |       |
+| from_date | date | NO   | PRI | NULL    |       |
+| to_date   | date | NO   |     | NULL    |       |
++-----------+------+------+-----+---------+-------+
+4 rows in set (0.017 sec)
+
+MySQL [employees]> describe titles;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| emp_no    | int         | NO   | PRI | NULL    |       |
+| title     | varchar(50) | NO   | PRI | NULL    |       |
+| from_date | date        | NO   | PRI | NULL    |       |
+| to_date   | date        | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.021 sec)
+*/
