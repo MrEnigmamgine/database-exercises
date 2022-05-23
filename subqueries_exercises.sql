@@ -10,9 +10,12 @@ where emp.hire_date = (select hire_date from employees where emp_no = 101010)
 select emp_no from employees where first_name = 'Aamod';
 
 select
-		*
+		distinct title
 from titles
+	join dept_emp demp using (emp_no)
 where emp_no in (select emp_no from employees where first_name = 'Aamod')
+	and demp.to_date > now()
+
 ;
 
 -- 3. How many people in the employees table are no longer working for the company? Give the answer in a comment in your code.
@@ -20,13 +23,30 @@ select emp_no from salaries where to_date < now(); -- old salaries
 select emp_no from salaries where to_date > now(); -- new salaries
 
 select count(*)
-from salaries
+from employees
 where emp_no in (select emp_no from salaries where to_date < now())
 	and emp_no not in (select emp_no from salaries where to_date > now())
 ;
--- 319310
+-- 59900 
+
+
+select count(*)
+from employees
+where  emp_no not in (select emp_no from salaries where to_date > now())
+;
+-- 59900
 
 -- 4. Find all the current department managers that are female. List their names in a comment in your code.
+
+select emp_no from dept_manager where to_date > now(); -- give me all manager emp_no
+
+select first_name, last_name
+from employees
+where emp_no in (select emp_no from dept_manager where to_date > now())
+	and gender = 'F'
+;
+
+/*************** Join Method ***************/
 select 
 	emp.first_name,
     emp.last_name
@@ -37,6 +57,7 @@ where
 	emp.gender = 'F'
     and dm.to_date > now()
 ;
+
 /*
 Isamu	Legleitner
 Karsten	Sigstam
@@ -54,10 +75,33 @@ where
     and to_date > now()
     ;
 
--- 6. How many current salaries are within 1 standard deviation of the current highest salary? (Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
+-- 6. How many current salaries are within 1 standard deviation of the current highest salary? (Hint: you can use a built in function to calculate the standard deviation.) 
+-- What percentage of all salaries is this?
 -- Hint You will likely use multiple subqueries in a variety of ways
 -- Hint It's a good practice to write out all of the small queries that you can. Add a comment above the query showing the number of rows returned. You will use this number (or the query that produced it) in other, larger queries.
-select stddev(salary) from salaries;
+select stddev(salary) from salaries where to_date > now(); -- Standard Deviation Current
+select max(salary) from salaries where to_date > now(); -- Max current salary
+
+select count(*)
+from salaries
+where to_date > now()
+	and salary > ((select max(salary) from salaries where to_date > now()) - (select stddev(salary) from salaries where to_date > now()))
+;  -- Count of salaries within one standard deviation
+select count(*) from salaries where to_date > now()
+; -- Count of all current salaries
+
+select
+(
+	(select count(*)
+	from salaries
+	where to_date > now()
+		and salary > ((select max(salary) from salaries where to_date > now()) - (select stddev(salary) from salaries where to_date > now()))
+	)
+	/
+	(select count(*) from salaries where to_date > now())
+) * 100
+as Percentage 
+;
 
 -- BONUS
 
@@ -92,7 +136,7 @@ SELECT
 FROM
     dept_emp AS demp
         JOIN
-    departments AS dep ON dep.dept_no = demp.dept_no
+    departments AS dep USING (dept_no)
 WHERE
     emp_no = 	(SELECT 
 					emp.emp_no
