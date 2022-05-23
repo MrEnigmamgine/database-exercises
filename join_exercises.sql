@@ -318,10 +318,10 @@ order by dep.dept_name, emp.first_name
 select 
 		concat(emp.first_name,' ',emp.last_name) as 'Name',
         sub.highest_salary,
-        sub.dept_name as 'Department Name'
+        dep.dept_name as 'Department Name'
 from
 	(select
-			departments.dept_name,
+			departments.dept_no,
 			max(sal.salary) as highest_salary
 	from salaries as sal
 		join dept_emp as demp on sal.emp_no = demp.emp_no
@@ -330,6 +330,12 @@ from
 		and demp.to_date > now()
 	group by departments.dept_no
 	order by highest_salary desc) as sub
-join salaries as sal on sal.salary = sub.highest_salary
+left join salaries as sal on sal.salary = sub.highest_salary
 join employees as emp on sal.emp_no = emp.emp_no
+join departments as dep on sub.dept_no = dep.dept_no
+join dept_emp as demp on sal.emp_no = demp.emp_no
+where sal.to_date > now()
+	and demp.to_date > now()
+    and demp.dept_no = sub.dept_no
 ;
+
