@@ -1,3 +1,4 @@
+use employees;
 -- Join Example Database
 -- Use the join_example_db. Select all the records from both the users and roles tables.
 select *
@@ -253,6 +254,8 @@ order by sal.salary desc
 -- +------------+-----------+--------+-----------+
 -- | Vishwani   | Minakawa  | 106491 | Marketing |
 -- +------------+-----------+--------+-----------+
+
+
 -- Determine the average salary for each department. Use all salary information and round your results.
 select
 		departments.dept_name,
@@ -312,3 +315,21 @@ order by dep.dept_name, emp.first_name
 
 --  .....
 -- Bonus Who is the highest paid employee within each department.
+select 
+		concat(emp.first_name,' ',emp.last_name) as 'Name',
+        sub.highest_salary,
+        sub.dept_name as 'Department Name'
+from
+	(select
+			departments.dept_name,
+			max(sal.salary) as highest_salary
+	from salaries as sal
+		join dept_emp as demp on sal.emp_no = demp.emp_no
+		join departments on demp.dept_no = departments.dept_no
+	where sal.to_date > now()
+		and demp.to_date > now()
+	group by departments.dept_no
+	order by highest_salary desc) as sub
+join salaries as sal on sal.salary = sub.highest_salary
+join employees as emp on sal.emp_no = emp.emp_no
+;
