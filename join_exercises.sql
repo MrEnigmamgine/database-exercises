@@ -1,6 +1,6 @@
 use employees;
 -- Join Example Database
--- Use the join_example_db. Select all the records from both the users and roles tables.
+-- 1. Use the join_example_db. Select all the records from both the users and roles tables.
 select *
 from join_example_db.users
 ;
@@ -8,7 +8,7 @@ select *
 from join_example_db.roles
 ;
 
--- Use join, left join, and right join to combine results from the users and roles tables as we did in the lesson. 
+-- 2. Use join, left join, and right join to combine results from the users and roles tables as we did in the lesson. 
 -- Before you run each query, guess the expected number of results.
 select *
 from join_example_db.users
@@ -28,7 +28,7 @@ right join join_example_db.roles on users.role_id = roles.id
 ;
 -- 5
 
--- Although not explicitly covered in the lesson, aggregate functions like count can be used with join queries. 
+-- 3. Although not explicitly covered in the lesson, aggregate functions like count can be used with join queries. 
 -- Use count and the appropriate join type to get a list of roles along with the number of users that has the role. Hint: You will also need to use group by in the query.
 select 
 	roles.name,
@@ -41,9 +41,9 @@ group by roles.name
 
 
 -- Employees Database
--- Use the employees database.
+-- 1. Use the employees database.
 use employees;
--- Using the example in the Associative Table Joins section as a guide, write a query that shows each department along with the name of the current manager for that department.
+-- 2. Using the example in the Associative Table Joins section as a guide, write a query that shows each department along with the name of the current manager for that department.
 
 select 
 		t2.dept_name as 'Department Name',
@@ -69,7 +69,7 @@ ORDER BY t2.dept_name asc
 --   Sales              | Hauke Zhang
 
 
--- Find the name of all departments currently managed by women.
+-- 3. Find the name of all departments currently managed by women.
 select 
 		t2.dept_name as 'Department Name',
 		CONCAT(t3.first_name, ' ', t3.last_name) as 'Department Manager',
@@ -91,7 +91,7 @@ ORDER BY t2.dept_name asc
 -- Research        | Hilary Kambil
 
 
--- Find the current titles of employees currently working in the Customer Service department.
+-- 4. Find the current titles of employees currently working in the Customer Service department.
 select * from titles;
 select * from departments;
 
@@ -139,7 +139,7 @@ order by count asc
 -- Technique Leader   |   241
 
 
--- Find the current salary of all current managers.
+-- 5. Find the current salary of all current managers.
 select 	
 		dept.dept_name as 'Department Name',
 		concat(emp.first_name,' ', emp.last_name) as Name,
@@ -168,7 +168,7 @@ order by dept.dept_name
 -- Sales              | Hauke Zhang       | 101987
 
 
--- Find the number of current employees in each department.
+-- 6. Find the number of current employees in each department.
 select 
 		dept.dept_name,
         count(*)
@@ -194,7 +194,7 @@ order by dept.dept_no asc
 -- +---------+--------------------+---------------+
 
 
--- Which department has the highest average salary? Hint: Use current not historic information.
+-- 7. Which department has the highest average salary? Hint: Use current not historic information.
 select
 		departments.dept_name,
         avg(sal.salary) as average_salary
@@ -213,7 +213,7 @@ limit 1
 -- | Sales     | 88852.9695     |
 -- +-----------+----------------+
 
--- Who is the highest paid employee in the Marketing department?
+-- 8. Who is the highest paid employee in the Marketing department?
 select
 		emp.first_name,
         emp.last_name,
@@ -234,7 +234,7 @@ limit 1
 -- +------------+-----------+
 
 
--- Which current department manager has the highest salary?
+-- 9. Which current department manager has the highest salary?
 
 select
 		dm.dept_no,
@@ -256,7 +256,7 @@ order by sal.salary desc
 -- +------------+-----------+--------+-----------+
 
 
--- Determine the average salary for each department. Use all salary information and round your results.
+-- 10. Determine the average salary for each department. Use all salary information and round your results.
 select
 		departments.dept_name,
         round(avg(sal.salary)) as average_salary
@@ -292,7 +292,7 @@ order by average_salary desc
 -- +--------------------+----------------+
 
 
--- Bonus Find the names of all current employees, their department name, and their current manager's name.
+-- 11. Bonus Find the names of all current employees, their department name, and their current manager's name.
 select
 		concat(emp.first_name,' ',emp.last_name) as 'Employee Name',
         dep.dept_name as 'Department Name',
@@ -314,12 +314,36 @@ order by dep.dept_name, emp.first_name
 --  Huan Lortz   | Customer Service | Yuchang Weedman
 
 --  .....
--- Bonus Who is the highest paid employee within each department.
+
+
+-- 12. Bonus Who is the highest paid employee within each department.
+
+-- The subquery I'll be using.  Returns the highest salary for each dept_no.
+select
+			departments.dept_no,
+			max(sal.salary) as highest_salary
+	from salaries as sal
+		join dept_emp as demp on sal.emp_no = demp.emp_no
+		join departments on demp.dept_no = departments.dept_no
+	where sal.to_date > now()
+		and demp.to_date > now()
+	group by departments.dept_no
+	order by highest_salary desc;
+
+/*
+d007	158220
+d001	145128
+d009	144866
+*/
+
+/***************************************************************/
+
 select 
-		concat(emp.first_name,' ',emp.last_name) as 'Name',
+		concat(emp.first_name,' ',emp.last_name) as 'Name', 
         sub.highest_salary,
         dep.dept_name as 'Department Name'
 from
+	-- get the highest salary for each department
 	(select
 			departments.dept_no,
 			max(sal.salary) as highest_salary
@@ -330,12 +354,27 @@ from
 		and demp.to_date > now()
 	group by departments.dept_no
 	order by highest_salary desc) as sub
-left join salaries as sal on sal.salary = sub.highest_salary
-join employees as emp on sal.emp_no = emp.emp_no
+-- Find the employee numbers who's salaries match the highest salary on the salaries table  
+right join salaries as sal on sal.salary = sub.highest_salary 
+-- We need to match that with a name, so we'll use the employee's table
+join employees as emp on sal.emp_no = emp.emp_no 
+-- We also want the department's name.. that lives on the departments table
 join departments as dep on sub.dept_no = dep.dept_no
+-- And we want to make sure that that employee is a member of that department, so tack on the dept_emp table.
 join dept_emp as demp on sal.emp_no = demp.emp_no
-where sal.to_date > now()
-	and demp.to_date > now()
-    and demp.dept_no = sub.dept_no
-;
 
+where sal.to_date > now()  				-- make sure we aren't using old salaries
+	and demp.to_date > now()			-- make sure we're using current department membership data
+    and demp.dept_no = sub.dept_no		-- and finally make sure this row is for a user who is in the department we are looking for
+;
+/*
+Khosrow Sgarro	144434	Development
+Vidya Hanabata	144866	Customer Service
+Tokuyasu Pesch	158220	Sales
+Lunjin Swick	142395	Finance
+Yinlin Flowers	141953	Human Resources
+Ramachenga Soicher	130211	Research
+Youjian Cronau	138273	Production
+Akemi Warwick	145128	Marketing
+Shin Luck	132103	Quality Management
+*/
