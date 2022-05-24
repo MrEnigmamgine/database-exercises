@@ -11,9 +11,48 @@ SELECT
     if(to_date > now(), TRUE, FALSE) as is_current_employee
 FROM
 	employees
-    join dept_emp as emp using (emp_no)  
+    left join dept_emp as emp using (emp_no)
+WHERE
+	to_date > now()
+    
+UNION SELECT
+	distinct (emp_no),
+    dept_no,
+    hire_date,
+    to_date,
+    if(to_date > now(), TRUE, FALSE) as is_current_employee
+FROM
+	employees
+    left join dept_emp as emp using (emp_no)
+WHERE
+	to_date < now()
+    and emp_no not in (
+						select emp_no 
+                        from employees
+                        join dept_emp as emp using (emp_no)
+                        where to_date > now()
+                        )
+order by emp_no asc
 ;
 /* This will return employees more than once.  I'm not sure how to easily go about filtering it so if there's a newer record to drop the older record. */
+
+/*************** Q1 attempt 2 ************/
+select max(to_date), emp_no from dept_emp group by emp_no
+; -- latest to_date per employee
+
+select 
+	de.emp_no,
+    dept_no,
+    hire_date,
+    de.to_date,
+    if(de.to_date > now(), TRUE, FALSE) as is_current_employee
+from dept_emp as de
+	join (select max(to_date) as to_date, emp_no from dept_emp group by emp_no) as sub
+		on de.emp_no = sub.emp_no
+        and de.to_date = sub.to_date
+	join employees emp on de.emp_no = emp.emp_no
+        
+;
 
 -- 2. Write a query that returns all employee names (previous and current), 
 -- and a new column 'alpha_group' that returns 'A-H', 'I-Q', or 'R-Z' depending on the first letter of their last name.
