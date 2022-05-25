@@ -83,7 +83,7 @@ SELECT
        WHEN dept_name IN ('research', 'development') THEN 'R&D'
        WHEN dept_name IN ('sales', 'marketing') THEN 'Sales & Marketing'
        WHEN dept_name IN ('Production', 'Quality Management') THEN 'Prod & QM'
-       WHEN dept_name in ('Finance', 'Human Resources') then 'Finance & HR'
+       WHEN dept_name IN ('Finance', 'Human Resources') THEN 'Finance & HR'
        ELSE dept_name
    END AS dept_group,
    avg(salary)
